@@ -52,7 +52,7 @@ public class PairOfEmployees {
 
         for (int i = 0; i < employees.length - 1; i++) {
             for (int j = i + 1; j < employees.length; j++) {
-                if (employees[i][1].equals(employees[j][1])) {
+                if (employees[i][1].equals(employees[j][1]) && !(employees[i][0].equals(employees[j][0]))) {
                     //We need to convert the string date to Date format for comparison.
                     try {
                         SimpleDateFormat sdFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -61,31 +61,57 @@ public class PairOfEmployees {
                         Date secondEmpStartDate = sdFormat.parse(employees[j][2]);
                         Date secondEmpEndDate = sdFormat.parse(employees[j][3]);
 
-                        if (firstEmpStartDate.after(secondEmpStartDate) && secondEmpEndDate.after(firstEmpStartDate)) {
-                            long commonWorkedTime = secondEmpEndDate.getTime() - firstEmpStartDate.getTime();
-                            long commonWorkedDays = commonWorkedTime / (1000 * 60 * 60 * 24);
-                            if (commonWorkedDays > longestCommonWorkedDays) {
-                                longestCommonWorkedDays = commonWorkedDays;
-                                pairEmployees.set(0, employees[i][0]);
-                                pairEmployees.set(1, employees[j][0]);
-                            } else if(commonWorkedDays == longestCommonWorkedDays) {
-                                pairEmployees.add(employees[i][0]);
-                                pairEmployees.add(employees[j][0]);
+                        if (firstEmpStartDate.compareTo(secondEmpStartDate) >= 0 && secondEmpEndDate.compareTo(firstEmpStartDate) > 0) {
+                            if (firstEmpEndDate.compareTo(secondEmpEndDate) < 0) {
+                                long commonWorkedTime = firstEmpEndDate.getTime() - firstEmpStartDate.getTime();
+                                long commonWorkedDays = commonWorkedTime / (1000 * 60 * 60 * 24);
+                                if (commonWorkedDays > longestCommonWorkedDays) {
+                                    longestCommonWorkedDays = commonWorkedDays;
+                                    pairEmployees.set(0, employees[i][0]);
+                                    pairEmployees.set(1, employees[j][0]);
+                                } else if (commonWorkedDays == longestCommonWorkedDays) {
+                                    pairEmployees.add(employees[i][0]);
+                                    pairEmployees.add(employees[j][0]);
+                                }
+                            } else {
+                                long commonWorkedTime = secondEmpEndDate.getTime() - firstEmpStartDate.getTime();
+                                long commonWorkedDays = commonWorkedTime / (1000 * 60 * 60 * 24);
+                                if (commonWorkedDays > longestCommonWorkedDays) {
+                                    longestCommonWorkedDays = commonWorkedDays;
+                                    pairEmployees.set(0, employees[i][0]);
+                                    pairEmployees.set(1, employees[j][0]);
+                                } else if (commonWorkedDays == longestCommonWorkedDays) {
+                                    pairEmployees.add(employees[i][0]);
+                                    pairEmployees.add(employees[j][0]);
+                                }
                             }
-                        } else if (secondEmpStartDate.after(firstEmpStartDate) && firstEmpEndDate.after(secondEmpStartDate)) {
-                            long commonWorkedTime = firstEmpEndDate.getTime() - secondEmpStartDate.getTime();
-                            long commonWorkedDays = commonWorkedTime / (1000 * 60 * 60 * 24);
-                            if (commonWorkedDays > longestCommonWorkedDays) {
-                                longestCommonWorkedDays = commonWorkedDays;
-                                pairEmployees.set(0, employees[i][0]);
-                                pairEmployees.set(1, employees[j][0]);
-                            } else if(commonWorkedDays == longestCommonWorkedDays) {
-                                pairEmployees.add(employees[i][0]);
-                                pairEmployees.add(employees[j][0]);
+                        } else if (secondEmpStartDate.compareTo(firstEmpStartDate) >= 0 && firstEmpEndDate.compareTo(secondEmpStartDate) > 0) {
+                            if (firstEmpEndDate.compareTo(secondEmpEndDate) < 0) {
+                                long commonWorkedTime = firstEmpEndDate.getTime() - secondEmpStartDate.getTime();
+                                long commonWorkedDays = commonWorkedTime / (1000 * 60 * 60 * 24);
+                                if (commonWorkedDays > longestCommonWorkedDays) {
+                                    longestCommonWorkedDays = commonWorkedDays;
+                                    pairEmployees.set(0, employees[i][0]);
+                                    pairEmployees.set(1, employees[j][0]);
+                                } else if (commonWorkedDays == longestCommonWorkedDays) {
+                                    pairEmployees.add(employees[i][0]);
+                                    pairEmployees.add(employees[j][0]);
+                                }
+                            } else {
+                                long commonWorkedTime = secondEmpEndDate.getTime() - secondEmpStartDate.getTime();
+                                long commonWorkedDays = commonWorkedTime / (1000 * 60 * 60 * 24);
+                                if (commonWorkedDays > longestCommonWorkedDays) {
+                                    longestCommonWorkedDays = commonWorkedDays;
+                                    pairEmployees.set(0, employees[i][0]);
+                                    pairEmployees.set(1, employees[j][0]);
+                                } else if (commonWorkedDays == longestCommonWorkedDays) {
+                                    pairEmployees.add(employees[i][0]);
+                                    pairEmployees.add(employees[j][0]);
+                                }
                             }
                         }
                     } catch (Exception e) {
-                       e.printStackTrace();
+                        e.printStackTrace();
                     }
                 }
             }
@@ -95,7 +121,7 @@ public class PairOfEmployees {
             String delimiter = ", ";
             StringJoiner joiner = new StringJoiner(delimiter);
             pairEmployees.forEach(item -> joiner.add(String.valueOf(item)));
-            System.out.println(joiner.toString());
+            System.out.println(joiner.toString() + ", " + longestCommonWorkedDays);
         } else {
             System.out.println("No pair employees found");
         }
@@ -104,7 +130,7 @@ public class PairOfEmployees {
 
     public static void main(String[] args) throws FileNotFoundException {
 
-        List<String> employees = readCVSFile("/Users/iremgunay/Desktop/employee.csv");
+        List<String> employees = readCVSFile("/Users/iremgunay/Desktop/employees.csv");
         String[][] employeesArray = nullToStringDate(employees);
         findEmployeesWorkedTogether(employeesArray);
 
